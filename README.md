@@ -1,4 +1,5 @@
-PDB Structure Analyzer — Extended (Residue XYZ Export)
+Q-Core (Quantum Coherence in Redox Enzymes) version alpha 0.001
+
 
 An interactive Python tool to explore macromolecular structures from the PDB: search and filter atoms, compute bounding-box dimensions, detect short-range contacts, subdivide the structure into 3D grids, visualize in PyMOL, and export per-residue coordinates to XYZ/EXTXYZ (including an optional “stack” layout). The interface is bilingual (Português/English) and runs entirely from the terminal.
 
