@@ -1,7 +1,8 @@
 ````md
 # Q-Core (Quantum Coherence in Redox Enzymes) — v0.1.0
 
-An interactive Python terminal tool to explore macromolecular structures from the PDB/mmCIF: search and filter atoms, compute bounding-box dimensions, detect short-range contacts, subdivide the structure into 3D grids, optionally visualize in PyMOL, and export per-residue coordinates to XYZ / annotated XYZ / EXTXYZ (including an optional **STACK** layout). The interface is bilingual (Português/English).
+An interactive Python terminal tool to explore macromolecular structures from the PDB/mmCIF:
+search and filter atoms, compute bounding-box dimensions, detect short-range contacts, subdivide the structure into 3D grids, optionally visualize in PyMOL, and export per-residue coordinates to XYZ / annotated XYZ / EXTXYZ (including an optional **STACK** layout). The interface is bilingual (Português/English).
 
 Project: Advisor — Filipe Dalmatti (Lattes: http://lattes.cnpq.br/9691181918031689) · Student — Daniel Castilho (Lattes: http://lattes.cnpq.br/9890731963550827)
 
