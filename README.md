@@ -233,7 +233,3 @@ Arquivos são obtidos via download do RCSB PDB (ex.: `https://files.rcsb.org/dow
 ## Licença
 
 MIT — veja `LICENSE`.
-
-```
-::contentReference[oaicite:0]{index=0}
-```
