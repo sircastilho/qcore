@@ -1,122 +1,239 @@
-# Q-Core (Quantum Coherence in Redox Enzymes) version alpha 0.001
+````md
+# Q-Core (Quantum Coherence in Redox Enzymes) — v0.1.0
 
+An interactive Python terminal tool to explore macromolecular structures from the PDB/mmCIF: search and filter atoms, compute bounding-box dimensions, detect short-range contacts, subdivide the structure into 3D grids, optionally visualize in PyMOL, and export per-residue coordinates to XYZ / annotated XYZ / EXTXYZ (including an optional **STACK** layout). The interface is bilingual (Português/English).
 
-An interactive Python tool to explore macromolecular structures from the PDB: search and filter atoms, compute bounding-box dimensions, detect short-range contacts, subdivide the structure into 3D grids, visualize in PyMOL, and export per-residue coordinates to XYZ/EXTXYZ (including an optional “stack” layout). The interface is bilingual (Português/English) and runs entirely from the terminal.
+Project: Advisor — Filipe Dalmatti (Lattes: http://lattes.cnpq.br/9691181918031689) · Student — Daniel Castilho (Lattes: http://lattes.cnpq.br/9890731963550827)
 
-Project: Advisor — Filipe Dalmatti (Lattes: http://lattes.cnpq.br/9691181918031689
-) · Student — Daniel Castilho (Lattes: http://lattes.cnpq.br/9890731963550827
-)
+## Highlights
 
-# Highlights
+- Download PDB or mmCIF files from RCSB and parse with Bio.PDB.
+- Atom searches by criteria and coordinate ranges.
+- Structure dimensions (min/max per axis).
+- Short-range contact search using `scipy.spatial.KDTree`.
+- 3D grid subdivision (**nx × ny × nz**) and residue listing per grid.
+- Optional PyMOL visualization (selections, grids, secondary structures, ligands/ions, B-factor coloring).
+- Exports to CSV/TSV/Excel/JSON and per-residue XYZ / annotated XYZ / EXTXYZ.
+- Optional **STACK** file (residues centered and laid along +X with configurable spacing).
 
-The program downloads a PDB or mmCIF file from RCSB, parses it with Bio.PDB, converts atoms to an internal matrix, and offers an interactive menu. You can search by criteria or coordinate ranges, compute dimensions, find atom–atom pairs within a distance using a KD-tree, isolate a chain, subdivide the box into nx × ny × nz grids and list residues per grid, color by B-factor in PyMOL, highlight secondary structures or ligands, and export results to CSV/Excel. The residue-level exporter writes XYZ, annotated XYZ, or EXTXYZ for each residue and can also build a single STACK file where residues are centered and laid out along +X with configurable spacing.
+If PyMOL is not installed or import fails, visualization options are skipped gracefully.
 
-# Installation
+## Repository layout
 
-Use Python 3.9+ and install the scientific stack. PyMOL is optional; if not present, visualization features are skipped gracefully.
+- `qcore.py` — main CLI (terminal) entrypoint.
+- `qcore_studio.py` — alternate CLI entrypoint (“Studio”) with optional PyMOL integration and optional Tkinter file dialog.
+- `qcore_alpha.py` — experimental/alpha version (may change quickly).
+- `Main/` — internal project folder.
+- `LICENSE` — MIT License.
 
-# create & activate a virtual environment (recommended)
+## Installation
+
+Requires **Python 3.9+**.
+
+### Create & activate a virtual environment
+
+```bash
 python -m venv .venv
-source .venv/bin/activate  # on Windows: .venv\Scripts\activate
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+```
+````
 
-# core dependencies
+### Core dependencies
+
+```bash
+pip install -U pip
 pip install biopython numpy pandas scipy requests
+```
 
-# optional: PyMOL (use your OS package or open-source build if available)
-# e.g., on some systems: pip install pymol-open-source
+### Optional dependencies
 
-# Running
+- PyMOL (visualization): install according to your environment; features are enabled only if `from pymol import cmd` works.
+- Tkinter (file dialog): used only to select local PDB/CIF files; if unavailable, the program asks for the path in the terminal.
 
-Simply execute the script and follow the prompts. The first prompt asks for the interface language; the second asks for a PDB code.
+## Running
 
-python pdb_structure_analyzer.py
+### Q-Core (CLI)
 
-When prompted for a PDB code, enter something like 1CRN or 7XYZ. The tool attempts download in PDB then CIF format; if successful, it parses and shows header metadata. The menu then offers numbered actions such as searches, grid subdivision, visualization, and exports. Press Enter when asked to continue; type S/N (pt) or Y/N (en) for yes/no questions.
+```bash
+python qcore.py
+```
 
-# Menu Overview
+### Q-Core Studio (CLI)
 
-The main operations are presented as numbered options:
+```bash
+python qcore_studio.py
+```
 
-Search atoms by criterion — choose a field (id, name/nome, residue/residuo, chain/cadeia, sequence/sequencia, x, y, z, atom_type/tipo_atomo) and a value, then print matching rows.
+Typical flow:
 
-Search by coordinate range — filter by X, Y or Z between start and end values.
+1. Choose interface language (Português/English).
+2. Choose input mode: PDB code (download) or local file (`.pdb` / `.cif`).
+3. Use the numbered menu options for searches, grids, visualization and exports.
 
-Calculate structure dimensions — prints min/max per axis.
+Yes/No prompts accept: **S/N** (pt) or **Y/N** (en).
 
-Search atoms by distance — returns pairs of atoms within a cutoff, using scipy.spatial.KDTree.
+## Menu overview
 
-Simultaneous XYZ box search — filter by rectangular box; optionally include whole amino acids for any atom that falls inside. Immediately after, you can export found residues to XYZ / annotated XYZ / EXTXYZ, choose an output folder, and optionally build a STACK placing each residue centroid along +X with a configurable spacing (default 5.0 Å). A master CSV catalog is saved.
+Main operations include:
 
-Subdivide into grids — choose nx, ny, nz. The tool shows CGO wireframe boxes in PyMOL (if available), creates PyMOL selections naming residues in each grid, and prints their residue lists in the terminal. You can then export residues from a specific grid to XYZ/EXTXYZ (with the same options as above).
+- Search atoms by criterion (id, name/nome, residue/residuo, chain/cadeia, sequence/sequencia, x, y, z, atom_type/tipo_atomo).
+- Search by coordinate range (X/Y/Z).
+- Calculate structure dimensions.
+- Search atom–atom pairs within a distance cutoff (KD-tree).
+- Simultaneous XYZ box search (optionally include whole residues; per-residue export).
+- Subdivide into grids (nx, ny, nz), list residues per grid, and export by grid.
+- Download/save raw PDB/CIF.
+- Action history.
+- Export results (CSV/TSV/Excel/JSON and summary modes).
+- Optional PyMOL tools: secondary structures, ligands/ions, color by B-factor.
+- Optional tunneling path (A→B) within a cutoff neighborhood.
 
-Download file — saves the raw .pdb or .cif locally.
+## Residue export details
 
-Action history — lists your actions in this session.
+Supported formats:
 
-Export atom table — writes all current atoms (or pairwise distances if that was the latest result set) to CSV or Excel.
+- **XYZ** — standard header + `element x y z`.
+- **Annotated XYZ** — adds per-line metadata (atom name, residue, chain, B-factor, atom id, etc.).
+- **EXTXYZ** — includes a `Properties=` header compatible with ASE/OVITO and the same metadata fields.
 
-About — credits and project info.
+Outputs:
 
-Secondary structures — colors helices/sheets/turns in PyMOL.
+- One file per residue in the chosen output folder (default `xyz_exports`).
+- A master CSV `<PDB>_residue_xyz_index.csv` cataloging residue name, chain, sequence number, atom count, and file paths.
+- Optional **STACK** file (`STACK_<PDB>.xyz`) where residues are translated so their centroids lie on +X with configurable spacing (default 5.0 Å).
 
-Ligands and ions — selects non-water HET groups and shows them as sticks in PyMOL.
+## Data sources & fair use
 
-Color by B-factor — blue-white-red spectrum in PyMOL.
+Structure files are fetched from RCSB PDB downloads (e.g., `https://files.rcsb.org/download/<code>.(pdb|cif)`). Please ensure your use complies with RCSB PDB’s terms and data usage policies. This tool is intended for educational and research purposes.
 
-Restart — return to the PDB prompt.
+## Troubleshooting
 
-Exit — quits the program.
+- Download failures: check network connectivity and the PDB code.
+- PyMOL features unavailable: ensure PyMOL is importable in your Python environment; otherwise continue using non-visual features.
+- Remote/OpenGL issues: run PyMOL locally and use export/analysis features on the server.
 
-If PyMOL is not installed or import fails, visualization options print a message and continue without crashing.
+## License
 
-Residue Export Details
+MIT — see `LICENSE`.
 
-Three formats are available:
+---
 
-XYZ — standard two-line header followed by element x y z.
+# Q-Core (Coerência Quântica em Enzimas Redox) — v0.1.0
 
-Annotated XYZ — adds per-line annotations: element x y z atom_name resname chain resid bfactor atom_id.
+Uma ferramenta interativa em Python para **terminal** (CLI) destinada à exploração de estruturas macromoleculares do PDB/mmCIF: busca e filtragem de átomos, cálculo das dimensões da caixa delimitadora, detecção de contatos de curto alcance, subdivisão em grids 3D, visualização opcional no PyMOL e exportação por resíduo para XYZ / XYZ anotado / EXTXYZ (incluindo opção de **STACK**). A interface é bilíngue (Português/English).
 
-EXTXYZ — writes a Properties= header compatible with ASE/OVITO and includes the same annotations as structured fields.
+Projeto: Orientador — Filipe Dalmatti (Lattes: [http://lattes.cnpq.br/9691181918031689](http://lattes.cnpq.br/9691181918031689)) · Discente — Daniel Castilho (Lattes: [http://lattes.cnpq.br/9890731963550827](http://lattes.cnpq.br/9890731963550827))
 
-Each residue is written to its own file inside the chosen output folder (default xyz_exports). A master CSV named <PDB>_residue_xyz_index.csv catalogs residue name, chain, sequence number, atom count, the per-residue file path, and, if requested, the path to the generated STACK file. The STACK is a simple XYZ where every residue is translated so its centroid sits at (offset_x, 0, 0) with offset_x increasing by the chosen spacing.
+## Destaques
 
-Element inference follows PDB atom naming rules as robustly as possible; if the element is missing, the first letters of the atom name are used to guess it.
+- Download de arquivos PDB/mmCIF do RCSB e parse com Bio.PDB.
+- Buscas por critérios e por intervalos de coordenadas.
+- Dimensões da estrutura (min/max por eixo).
+- Busca de contatos por cutoff usando `scipy.spatial.KDTree`.
+- Subdivisão em grids 3D (**nx × ny × nz**) e listagem de resíduos por grid.
+- Visualização opcional no PyMOL (seleções, grids, estruturas secundárias, ligantes/íons, coloração por B-factor).
+- Exportação para CSV/TSV/Excel/JSON e exportação por resíduo para XYZ / XYZ anotado / EXTXYZ.
+- Arquivo **STACK** opcional (resíduos centralizados e alinhados em +X com espaçamento configurável).
 
-Notes on Chains, Grids, and PyMOL
+Se o PyMOL não estiver instalado ou o import falhar, as opções de visualização são ignoradas sem travar.
 
-It is possible to filter a specific chain before grid subdivision. When grids are created, the tool builds CGO wireframes and per-grid PyMOL selections that you can show as sticks and zoom into. Colors are assigned deterministically based on (i + j + k). The terminal prints human-readable residue names in Portuguese or English according to the language setting.
+## Estrutura do repositório
 
-Data Sources & Fair Use
+- `qcore.py` — CLI principal (terminal).
+- `qcore_studio.py` — entrada alternativa (“Studio”) com integração opcional ao PyMOL e seletor de arquivos opcional via Tkinter.
+- `qcore_alpha.py` — versão experimental/alpha (pode mudar rapidamente).
+- `Main/` — pasta interna do projeto.
+- `LICENSE` — Licença MIT.
 
-Structure files are fetched from RCSB PDB (https://files.rcsb.org/download/<code>.(pdb|cif)). Please make sure your use complies with RCSB PDB’s terms and data usage policies. This tool is intended for educational and research purposes.
+## Instalação
 
-Troubleshooting
+Requer **Python 3.9+**.
 
-If the download fails, check your network and the PDB code. If PyMOL features are unavailable, ensure PyMOL can be imported in Python; otherwise continue using the non-visual features. If OpenGL/GUI issues occur on remote servers, try running PyMOL locally and using only the export and analysis options on the server.
+### Criar e ativar um ambiente virtual
 
-# MIT License
+```bash
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+```
 
-Copyright (c) 2025 Daniel Castilho de Oliveira-Neto and supervisor Filipe Camargo Dalmatti Alves Lima
+### Dependências principais
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+```bash
+pip install -U pip
+pip install biopython numpy pandas scipy requests
+```
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+### Dependências opcionais
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+- PyMOL (visualização): instale conforme o seu ambiente; os recursos só são ativados se `from pymol import cmd` funcionar.
+- Tkinter (seletor de arquivos): usado apenas para escolher arquivo local; se indisponível, o programa pede o caminho no terminal.
 
-# Português — Visão Geral Rápida
+## Execução
 
-O programa é interativo em terminal e permite baixar e analisar estruturas do PDB, buscar por critérios e intervalos, calcular dimensões, detectar pares de átomos por distância, dividir o espaço em grids 3D, visualizar no PyMOL (opcional) e exportar resíduos para XYZ/EXTXYZ, inclusive em um arquivo STACK com resíduos alinhados ao longo de +X e espaçamento configurável. A exportação gera um CSV-mestre com índice dos arquivos. Se o PyMOL não estiver instalado, as funções de visualização são desativadas sem interromper o programa. Para executar, instale Python 3.9+, biopython, numpy, pandas, scipy, requests e, opcionalmente, PyMOL; então rode python pdb_structure_analyzer.py e siga o menu.
+### Q-Core (CLI)
+
+```bash
+python qcore.py
+```
+
+### Q-Core Studio (CLI)
+
+```bash
+python qcore_studio.py
+```
+
+Fluxo típico:
+
+1. Escolha o idioma (Português/English).
+2. Escolha o modo: código PDB (download) ou arquivo local (`.pdb` / `.cif`).
+3. Use o menu numerado para buscas, grids, visualização e exportações.
+
+Perguntas Sim/Não aceitam: **S/N** (pt) ou **Y/N** (en).
+
+## Visão geral do menu
+
+Operações principais incluem:
+
+- Busca por critério (id, nome/name, resíduo/residue, cadeia/chain, sequência/sequence, x, y, z, tipo_atomo/atom_type).
+- Busca por intervalo de coordenadas (X/Y/Z).
+- Cálculo das dimensões da estrutura.
+- Busca de pares átomo–átomo por cutoff (KD-tree).
+- Busca por caixa XYZ simultânea (opção de incluir resíduos completos; exportação por resíduo).
+- Subdivisão em grids (nx, ny, nz), listagem de resíduos por grid e exportação por grid.
+- Download/salvar PDB/CIF.
+- Histórico de ações.
+- Exportação de resultados (CSV/TSV/Excel/JSON e modos de resumo).
+- PyMOL opcional: estruturas secundárias, ligantes/íons, coloração por B-factor.
+- Caminho de tunelamento (A→B) opcional em vizinhança por cutoff.
+
+## Exportação por resíduo
+
+Formatos:
+
+- **XYZ** — cabeçalho padrão + `elemento x y z`.
+- **XYZ anotado** — adiciona metadados por linha (nome do átomo, resíduo, cadeia, B-factor, id do átomo, etc.).
+- **EXTXYZ** — inclui cabeçalho `Properties=` compatível com ASE/OVITO e os mesmos metadados.
+
+Saídas:
+
+- Um arquivo por resíduo na pasta escolhida (padrão `xyz_exports`).
+- Um CSV-mestre `<PDB>_residue_xyz_index.csv` com resíduos e caminhos.
+- **STACK** opcional (`STACK_<PDB>.xyz`) com resíduos alinhados em +X por centróide (espaçamento padrão 5,0 Å).
+
+## Fontes de dados & uso responsável
+
+Arquivos são obtidos via download do RCSB PDB (ex.: `https://files.rcsb.org/download/<code>.(pdb|cif)`). Garanta que seu uso esteja em conformidade com as políticas do RCSB. Ferramenta destinada a fins educacionais e de pesquisa.
+
+## Solução de problemas
+
+- Falha no download: verifique rede e o código PDB.
+- PyMOL indisponível: confirme que o PyMOL é importável no ambiente Python; caso contrário use recursos não-visuais.
+- Problemas de OpenGL/GUI em servidor: rode o PyMOL localmente e use exportação/análise no servidor.
+
+## Licença
+
+MIT — veja `LICENSE`.
+
+```
+::contentReference[oaicite:0]{index=0}
+```
